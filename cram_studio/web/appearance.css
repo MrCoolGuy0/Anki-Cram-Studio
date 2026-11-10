@@ -1,0 +1,132 @@
+/* Both preview and reviewer use the same scene, bounds and saved aspect ratio. */
+.session {background:var(--bg);color:var(--ink)}
+.session.cram-custom-width .session-main {max-width:none}
+#cram-live.cram-custom-width {max-width:none}
+.session.cram-sized-flash .flash-card,.session.cram-sized-exam .exam-card {
+  --cram-frame-limit:min(var(--cram-card-height),max(180px,calc(var(--cram-scene-height,100vh) - 240px)));
+  width:min(var(--cram-card-width,100%),calc(var(--cram-frame-limit) * var(--cram-card-ratio)));
+  max-width:100%;margin-inline:auto;min-height:0;height:auto;aspect-ratio:var(--cram-card-ratio);
+}
+#cram-live.cram-sized-flash .cl-flip,#cram-live.cram-sized-exam .cl-exam {
+  --cram-frame-limit:min(var(--cram-card-height),max(180px,calc(var(--cram-scene-height,100vh) - 122px)));
+  width:min(var(--cram-card-width,100%),calc(var(--cram-frame-limit) * var(--cram-card-ratio)));
+  max-width:100%;margin-inline:auto;min-height:0;height:auto;aspect-ratio:var(--cram-card-ratio);
+}
+.session .exam-card,#cram-live .cl-exam {display:grid;min-height:0;overflow:hidden;row-gap:16px}
+.session .exam-card {
+  height:max(330px,min(720px,calc(var(--cram-scene-height,100vh) - 240px)));
+  grid-template-rows:auto minmax(0,var(--cram-question-track,60fr)) minmax(0,var(--cram-choices-track,40fr)) auto;
+}
+#cram-live .cl-exam {height:var(--cl-card-height);grid-template-rows:minmax(0,var(--cram-question-track,60fr)) minmax(0,var(--cram-choices-track,40fr))}
+.session .exam-card>.card-heading {margin-bottom:0}
+.session .exam-card>.card-footer {min-height:58px;padding:10px 0}
+.session .exam-card>.question-panel {margin:0;min-height:0}
+.session .exam-card>.choice-section,#cram-live .cl-answers {min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:2px}
+.session .slot-group[hidden],#cram-live .cl-slot[hidden] {display:none!important}
+.session .slot-group+.slot-group,#cram-live .cl-slot+.cl-slot {margin-top:0}
+.session .exam-card .slot-label,#cram-live .cl-slot-label {margin-bottom:10px}
+.session .exam-card .choices,#cram-live .cl-choices {gap:12px}
+.session .exam-card button.choice,#cram-live button.cl-choice {min-height:56px;padding:10px 14px;gap:12px;font-size:var(--cram-choice-font,18px);line-height:1.45}
+.session .exam-card .choice-text,#cram-live .cl-choice-text {font-size:var(--cram-choice-font,18px);line-height:1.45}
+/* The colored question surface owns overflow. A scrolling grid wrapper plus
+   a 100% minimum-height inner panel allowed text to escape its background. */
+.session .exam-card>.question-panel,#cram-live .cl-question-panel {
+  min-width:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;
+}
+#cram-live .cl-question-body {display:flex;flex-direction:column;min-width:0;min-height:0;padding:0}
+#cram-live .cl-question-panel {display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+#cram-live .cl-question-panel>.cl-clue {flex:0 0 auto;min-width:0;margin-block:auto}
+.session.cram-sized-flash .session-main>.progress-track {width:min(var(--cram-card-width,100%),calc(min(var(--cram-card-height),max(180px,calc(var(--cram-scene-height,100vh) - 240px))) * var(--cram-card-ratio)));max-width:100%;margin-inline:auto}
+.session .primary {color:var(--cram-on-accent,#fff)}
+.cram-dark .session .primary {color:var(--cram-on-accent,#101630)}
+body.cram-live-on {background:var(--cram-live-canvas,#fff)!important}
+.nightMode.cram-live-on,.night_mode.cram-live-on {background:var(--cram-live-canvas,#0e1427)!important}
+
+/* Text and surfaces are separate; feedback never supplies the revealed answer color. */
+.session .btn.secondary,.session .choice {background:var(--cram-button-bg,var(--panel));color:var(--cram-button-text,var(--ink))}
+.session .flash-controls .btn.secondary {background:var(--cram-reveal-bg,var(--panel));color:var(--cram-reveal-text,var(--ink))}
+.session .choice:hover:not(:disabled):not(.right):not(.wrong),.session .choice.selected {background:var(--tint);color:var(--cram-selection-text,var(--ink))}
+.session .choice.right,.session .btn.good {background:var(--cram-correct-bg,var(--green-tint));color:var(--cram-correct-text,var(--green))}
+.session .choice.wrong,.session .btn.bad {background:var(--cram-incorrect-bg,var(--red-tint));color:var(--cram-incorrect-text,var(--red))}
+/* Preserve the original choice text when no palette is selected. */
+.session .choice.right {color:var(--cram-correct-text,var(--ink))}
+.session .choice.wrong {color:var(--cram-incorrect-text,var(--ink))}
+.session .ct-blank.revealed-answer {color:var(--cram-answer-text,var(--primary));background:var(--cram-answer-bg,transparent)}
+.session .answer-item .answer-value {color:var(--cram-answer-text,var(--ink));background:transparent}
+#cram-live .cl-choice {background:var(--cram-button-bg,var(--cl-panel));color:var(--cram-button-text,var(--cl-text))}
+#cram-live .cl-choice:hover:not(:disabled):not(.correct):not(.incorrect),#cram-live .cl-choice.selected {background:var(--cl-tint);color:var(--cram-selection-text,var(--cl-text))}
+#cram-live .cl-choice.correct {background:var(--cram-correct-bg,var(--cl-good-bg));color:var(--cram-correct-text,var(--cl-text))}
+#cram-live .cl-choice.incorrect {background:var(--cram-incorrect-bg,var(--cl-bad-bg));color:var(--cram-incorrect-text,var(--cl-text))}
+#cram-live .cl-flash-content .cl-revealed-answer,#cram-live .cl-clue .cl-revealed-answer {color:var(--cram-answer-text,var(--cl-accent));background:var(--cram-answer-bg,transparent)}
+#cram-live .cl-answer-item {color:var(--cram-answer-text,var(--cl-text));background:transparent}
+
+/* Explicit answer colors win over embedded font/span colors, preserving rich structure. */
+.session.cram-answer-text-custom .revealed-answer *,.session.cram-answer-text-custom .answer-value *,#cram-live.cram-answer-text-custom .cl-revealed-answer *,#cram-live.cram-answer-text-custom .cl-answer-item * {color:inherit!important}
+.session.cram-answer-bg-custom .revealed-answer *,#cram-live.cram-answer-bg-custom .cl-revealed-answer * {background-color:transparent!important}
+
+/* Image layers stay behind content; buttons and the question panel keep solid colors. */
+.session{background-image:var(--cram-page-image,none);background-size:cover;background-position:center;background-repeat:no-repeat;background-attachment:fixed}
+body.cram-live-on{background-image:var(--cram-page-image,none)!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;background-attachment:fixed!important}
+.session .flash-turn .flash-face,.session .exam-card,#cram-live .cl-face,#cram-live .cl-exam{background-image:var(--cram-card-image,none);background-size:cover;background-position:center;background-repeat:no-repeat}
+
+/* Native-style cloze emphasis. Keep note-authored formatting inside the answer. */
+.session .ct-blank.revealed-answer,#cram-live .cl-flash-content .cl-revealed-answer,#cram-live .cl-clue .cl-revealed-answer {font-weight:bolder;-webkit-text-stroke:.12px currentColor;padding:0 1px;border-radius:0}
+
+.session {--cram-blank-ink:var(--primary);--cram-blank-tint:var(--tint)}
+#cram-live {--cram-blank-ink:var(--cl-accent);--cram-blank-tint:var(--cl-tint)}
+
+/* Unnumbered cloze placeholders. Slot IDs/accessible labels remain available,
+   while sentence text and real numbered answers retain their original content. */
+.session .ct-blank.cram-blank-empty,#cram-live .ct-blank.cram-blank-empty {
+  position:relative;display:inline-block;min-width:4.5em;max-width:100%;line-height:1.2;vertical-align:baseline;
+  padding:0 .15em;color:var(--cram-blank-ink,#4255ff)!important;font-weight:400;
+}
+.session .ct-blank.cram-blank-empty::after,#cram-live .ct-blank.cram-blank-empty::after {
+  content:"";position:absolute;left:.15em;right:.15em;bottom:.1em;height:2px;background:currentColor;border-radius:1px;pointer-events:none;
+}
+.session .exam-card .ct-blank.filled:not(.revealed-answer),#cram-live .cl-clue .ct-blank.cl-filled:not(.cl-revealed-answer) {color:var(--cram-blank-ink,#4255ff)}
+.session .exam-card .ct-blank.active,#cram-live .cl-clue .ct-blank.cl-active {
+  outline:1px solid var(--cram-blank-ink,#4255ff)!important;outline-offset:2px;
+  background:var(--cram-blank-active,var(--cram-blank-tint,#eef0ff));border-radius:4px;
+}
+/* A filled MCQ answer is part of its sentence/list item. Inline blocks place
+   the surrounding bullet on their last line and paint one tall answer box. */
+.session .exam-card:not(.write-card) .ct-blank.filled,
+#cram-live .cl-exam:not(.write-card) .ct-blank.cl-filled {
+  display:inline;white-space:normal;padding:0;border-radius:3px;
+}
+.session .exam-card:not(.write-card) .ct-blank.filled.cram-blank-lines,
+#cram-live .cl-exam:not(.write-card) .ct-blank.cl-filled.cram-blank-lines {
+  white-space:pre-wrap;
+}
+
+/* Flashcard text can be deliberately selected; its empty surface cannot. */
+.session .flash-card,#cram-live .cl-flip {-webkit-user-select:none;user-select:none}
+.session .flash-card .face-content,.session .flash-card .face-content *,
+#cram-live .cl-flash-content,#cram-live .cl-flash-content *,
+#cram-live .cl-original-content,#cram-live .cl-original-content * {
+  -webkit-user-select:text!important;user-select:text!important;cursor:text;
+}
+/* Recall controls and the entire IO frame/viewer remain selection-free. */
+.session .exam-card .ct-blank,.session .exam-card .ct-blank *,
+.session .waiting-card .ct-blank,.session .waiting-card .ct-blank *,
+.session .flash-card .cram-blank-empty,.session .flash-card .cram-blank-empty *,
+#cram-live .cl-clue .ct-blank,#cram-live .cl-clue .ct-blank *,
+#cram-live .cl-flip .cram-blank-empty,#cram-live .cl-flip .cram-blank-empty *,
+#cram-app .io-card,#cram-app .io-card *,#cram-app #viewer,#cram-app #viewer *,
+#cram-live .cl-io,#cram-live .cl-io *,
+#cram-app .io-image,#cram-app .io-image *,#cram-live .io-image,#cram-live .io-image *,
+.session .flash-card img,.session .flash-card .face-content img,.session .exam-card img,#cram-live .cl-flip img,#cram-live .cl-exam img {
+  -webkit-user-select:none!important;user-select:none!important;-webkit-user-drag:none!important;
+}
+
+/* Leave room for the full border/focus ring inside the answer scroll pane.
+   Native/theme disabled-button rules must not erase part of an option frame. */
+.session .exam-card>.choice-section{padding:6px;scroll-padding:6px}
+.session .exam-card .slot-group{min-width:0}
+.session .exam-card .choices{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+.session .exam-card button.choice{box-sizing:border-box;min-width:0;border-style:solid!important}
+.session .exam-card button.choice:disabled{opacity:1;border-color:var(--line)!important}
+.session .exam-card button.choice.right:disabled{border-color:var(--green)!important}
+.session .exam-card button.choice.wrong:disabled{border-color:var(--red)!important}
+@media(max-width:600px){.session .exam-card .choices{grid-template-columns:minmax(0,1fr)}}

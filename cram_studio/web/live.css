@@ -1,0 +1,216 @@
+/* ANKI CRAM only. Ordinary Study Now and MAIN CRAM are untouched. */
+#cram-live {
+  --cl-bg:#fff; --cl-panel:#fff; --cl-text:#282e3e; --cl-muted:#66728b;
+  --cl-soft:#f6f7fb; --cl-line:#e5e8f2; --cl-accent:#4255ff; --cl-tint:#f0f2ff;
+  --cl-good:#148368; --cl-good-bg:#e8f7ef; --cl-bad:#c34550; --cl-bad-bg:#fff0f1; --cl-mask:#f2bd52;
+  --cl-card-height:max(260px,min(calc(var(--cram-scene-height,100vh) * .74),calc(var(--cram-scene-height,100vh) - 122px)));
+  color:var(--cl-text); font:15px/1.6 "Segoe UI",Arial,sans-serif; text-align:left;
+  max-width:1180px; margin:0 auto; padding:16px 20px 24px; box-sizing:border-box;
+}
+@supports(height:100dvh) {
+  #cram-live { --cl-card-height:max(260px,min(calc(var(--cram-scene-height,100dvh) * .74),calc(var(--cram-scene-height,100dvh) - 122px))); }
+}
+.nightMode #cram-live,.night_mode #cram-live {
+  --cl-bg:#0e1427; --cl-panel:#192039; --cl-text:#f0f3ff; --cl-muted:#b4bdd5;
+  --cl-soft:#1c2440; --cl-line:#34405b; --cl-accent:#a4adff; --cl-tint:#2b3559;
+  --cl-good:#83d8b4; --cl-good-bg:#1c4038; --cl-bad:#ffacb6; --cl-bad-bg:#482c3b;
+}
+body.cram-live-on { margin:0!important; padding:0!important; background:#fff!important; }
+.nightMode.cram-live-on,.night_mode.cram-live-on { background:#0e1427!important; }
+#cram-live * { box-sizing:border-box; }
+#cram-live button {
+  font:600 12px/1.4 "Segoe UI",Arial,sans-serif; min-height:35px; padding:8px 13px;
+  border:1px solid var(--cl-line); border-radius:8px; background:var(--cl-panel);
+  color:var(--cl-text); cursor:pointer; box-shadow:none; margin:0;
+}
+#cram-live button:hover:not(:disabled) { border-color:var(--cl-accent); background:var(--cl-tint); }
+#cram-live button:disabled { opacity:.55; cursor:default; }
+#cram-live button:focus-visible { outline:2px solid var(--cl-accent); outline-offset:3px; }
+#cram-live [hidden] { display:none!important; }
+
+/* Equal side tracks keep the deck at the actual horizontal center. */
+.cl-header {
+  display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);
+  align-items:center; gap:16px; min-height:64px; margin:0 0 18px;
+}
+.cl-brand { grid-column:1; justify-self:start; font-size:18px; font-weight:750; color:var(--cl-accent); white-space:nowrap; }
+.cl-context { grid-column:2; min-width:0; text-align:center; }
+.cl-header-tools{grid-column:3;justify-self:end;display:flex;align-items:center;gap:8px;position:relative}
+.cl-settings{position:relative}
+#cram-live .cl-settings-toggle{display:grid;place-items:center;width:38px;height:38px;min-height:38px;background:transparent;border-color:transparent;color:var(--cl-muted);padding:0}
+.cl-mode-menu{position:absolute;right:0;top:calc(100% + 8px);z-index:30;width:184px;padding:6px;background:var(--cl-panel);border:1px solid var(--cl-line);border-radius:11px;box-shadow:0 10px 30px #0002;display:grid;gap:3px}
+#cram-live .cl-mode-menu button{text-align:left;border-color:transparent;background:transparent;font-size:13px}
+#cram-live .cl-mode-menu button[aria-pressed="true"]{background:var(--cl-tint);color:var(--cl-accent);opacity:1;cursor:default}
+.cl-deck { font-size:16px; font-weight:600; line-height:1.5; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.cl-status { color:var(--cl-muted); font-size:10px; line-height:1.5; margin-top:3px; overflow-wrap:anywhere; }
+#cram-live .cl-exit {
+  grid-column:3; justify-self:end; display:grid; place-items:center; width:38px; height:38px;
+  min-height:38px; padding:0; color:var(--cl-muted); background:transparent; border-color:transparent;
+}
+.cl-photo-viewer{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;padding:14px;gap:12px;background:var(--cl-bg);color:var(--cl-text);overscroll-behavior:contain}
+.cl-photo-tools{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex:0 0 auto}
+.cl-photo-tools>span{min-width:44px;text-align:center;font-size:12px}
+#cram-live [data-live-action="photo-close"]{font-size:25px;line-height:1;width:38px;padding:3px}
+.cl-photo-viewport{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;border-radius:12px;background:var(--cl-soft)}
+.cl-photo-stage{display:flex;min-width:100%;min-height:100%;width:max-content;padding:16px;align-items:center;justify-content:center}
+#cram-live #cl-photo-image{display:block;flex:none;height:auto!important;max-width:none!important;max-height:none!important;object-fit:contain;user-select:none;-webkit-user-select:none;-webkit-user-drag:none}
+
+.cl-flip { position:relative; perspective:1500px; height:var(--cl-card-height); }
+.cl-turn { position:absolute; inset:0; transform:rotateX(0deg); transform-style:preserve-3d; transition:transform .38s cubic-bezier(.2,.65,.3,1); }
+.cl-flip.is-flipped .cl-turn { transform:rotateX(180deg); }
+.cl-face {
+  position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  background:var(--cl-panel); border:1px solid var(--cl-line); box-shadow:0 8px 32px #1c294416;
+  border-radius:17px; padding:32px 40px; display:flex; align-items:center; justify-content:center;
+  overflow:hidden; transform:rotateX(0deg);
+}
+.cl-back { transform:rotateX(180deg); }
+.cl-compiled-flash { cursor:pointer; }
+.cl-face .cl-original-content,.cl-flash-content {
+  width:100%; max-height:100%; overflow:auto; overscroll-behavior:contain; scrollbar-width:thin;
+  text-align:center; font-size:27px; line-height:1.7; color:var(--cl-text); overflow-wrap:anywhere;
+}
+.cl-flash-content { font-size:29px; line-height:1.6; padding:4px; }
+#cl-original img,.cl-flash-content img { max-width:100%; height:auto; }
+.cl-face .cl-original-content img,.cl-flash-content img { max-height:54vh; object-fit:contain; }
+.cl-face .cl-original-content table { max-width:100%; }
+.cl-face .cl-original-content pre { white-space:pre-wrap; }
+.cl-front[aria-hidden=true],.cl-back[aria-hidden=true] { pointer-events:none; }
+.cl-flash-content .ct-blank { display:inline-block; text-decoration:none!important; border:0!important; }
+.cl-flash-content .cl-revealed-answer { color:var(--cl-good); background:var(--cl-good-bg); padding:0 3px; border-radius:3px; }
+.cl-answer-item+.cl-answer-item { margin-top:16px; }
+
+.cl-exam {
+  min-height:var(--cl-card-height); display:flex; flex-direction:column; padding:28px 34px;
+  background:var(--cl-panel); border:1px solid var(--cl-line); border-radius:17px; box-shadow:0 6px 28px #1c29440c;
+}
+.cl-question-body { flex:1; display:grid; align-content:center; min-height:150px; padding:12px 0 28px; }
+.cl-clue { font-size:23px; line-height:1.8; overflow-wrap:anywhere; }
+.cl-clue img { max-width:100%; max-height:280px; object-fit:contain; }
+.cl-slot { flex-shrink:0; }
+.cl-slot+.cl-slot { margin-top:26px; }
+.cl-slot-label { color:var(--cl-muted); font-size:12px; margin-bottom:12px; }
+.cl-active-slot .cl-slot-label { color:var(--cl-accent); }
+.cl-choices { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+#cram-live .cl-choice {
+  display:flex; align-items:center; gap:14px; min-height:67px; text-align:left;
+  font-size:16px; font-weight:400; border:2px solid var(--cl-line); padding:14px 17px; overflow-wrap:anywhere;
+}
+.cl-key { display:grid; place-items:center; flex:0 0 28px; height:28px; background:var(--cl-soft); border-radius:50%; font-size:13px; color:var(--cl-muted); font-weight:650; }
+.cl-choice-text { min-width:0; overflow-wrap:anywhere; }
+#cram-live .cl-choice.selected { border-color:var(--cl-accent); background:var(--cl-tint); }
+/* Keep the letter circle distinct, matching MAIN CRAM hover/selection. */
+#cram-live .cl-choice.selected .cl-key { background:var(--cl-panel); color:var(--cl-accent); }
+#cram-live .cl-choice.correct { border-color:var(--cl-good); background:var(--cl-good-bg); opacity:1; }
+#cram-live .cl-choice.incorrect { border-color:var(--cl-bad); background:var(--cl-bad-bg); opacity:1; }
+/* Native/theme hover animations must not fade or move an answer hit box. */
+#cram-live button.cl-choice,#cram-live button.cl-choice:hover,#cram-live button.cl-choice:active,#cram-live button.cl-choice:focus {transform:none!important;translate:none!important;scale:none!important;animation:none!important;transition:none!important;filter:none!important;box-shadow:none!important;border-width:2px!important;margin:0!important}
+#cram-live button.cl-choice:not(:disabled) {opacity:1!important}
+#cram-live button.cl-choice .cl-key,#cram-live button.cl-choice .cl-choice-text {transform:none!important;animation:none!important;transition:none!important}
+/* Hover effects can also live on ancestors, labels or pseudo-element overlays. */
+#cram-live.cram-live-exam,#cram-live.cram-live-exam #cl-stage,#cram-live.cram-live-exam #cl-custom,
+#cram-live.cram-live-exam .cl-exam,#cram-live.cram-live-exam .cl-question-panel,
+#cram-live.cram-live-exam .cl-exam .cl-question-body,#cram-live.cram-live-exam .cl-exam .cl-answers,#cram-live.cram-live-exam .cl-exam .cl-slot,#cram-live.cram-live-exam .cl-exam .cl-choices,
+#cram-live button.cl-choice .cl-key,#cram-live button.cl-choice .cl-choice-text {
+  animation:none!important;transition:none!important;transform:none!important;translate:none!important;scale:none!important;
+  filter:none!important;opacity:1!important;visibility:visible!important;
+}
+#cram-live button.cl-choice {background-image:none!important}
+#cram-live button.cl-choice::before,#cram-live button.cl-choice::after {content:none!important;display:none!important;animation:none!important;transition:none!important}
+.cl-clue .ct-blank { display:inline-block; text-decoration:none!important; border:0!important; color:var(--cl-accent); padding:0 3px; max-width:100%; }
+.cl-clue .ct-blank:not(.cl-filled) { white-space:nowrap; }
+.cl-clue .ct-blank.cl-active { outline:none!important; border:0!important; background:var(--cl-tint); }
+.cl-clue .ct-blank.cl-filled { background:var(--cl-tint); }
+.cl-feedback { text-align:center; font-size:13px; color:var(--cl-muted); padding:10px 0 0; }
+#cram-live .ct-highlight,#cram-live mark { background:#e6deff; color:#242337; padding:0 2px; }
+#cl-notice { font-size:12px; color:var(--cl-muted); text-align:center; margin:17px auto; }
+#cl-notice:empty { display:none; }
+.cl-notice-actions { display:flex; justify-content:center; gap:10px; margin-top:12px; }
+.cl-spinner { display:inline-block; width:12px; height:12px; border:2px solid var(--cl-line); border-top-color:var(--cl-accent); border-radius:50%; margin-right:8px; animation:cl-spin 1s linear infinite; }
+@keyframes cl-spin { to { transform:rotate(360deg); } }
+
+/* Keep image occlusion's fixed preview and dedicated viewer controls. */
+.cl-io { background:var(--cl-panel); border:1px solid var(--cl-line); border-radius:17px; padding:22px; }
+.cl-io-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+.cl-label { font-size:12px; font-weight:600; color:var(--cl-muted); }
+.cl-io-tools { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--cl-muted); }
+.cl-io-tools #cl-zoom { width:42px; text-align:center; font-variant-numeric:tabular-nums; }
+.cl-caption { font-size:19px; line-height:1.7; margin:12px 0 18px; }
+.cl-viewport { height:350px; overflow:auto; background:var(--cl-tint); border:1px solid var(--cl-line); border-radius:10px; overscroll-behavior:contain; }
+.cl-image-stage { display:flex; align-items:flex-start; justify-content:center; min-width:100%; min-height:100%; width:max-content; padding:15px; }
+.cl-image-stage .io-image { position:relative; line-height:0; flex-shrink:0; margin:auto; }
+.cl-image-stage .io-image>img { display:block; width:100%; height:auto!important; max-width:none!important; max-height:none!important; }
+.cl-image-stage .io-image>svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+.cl-image-stage .mask { fill:var(--cl-mask); stroke:#886827; stroke-width:1; }
+.cl-image-stage .mask.inactive { fill:#a8b3c6; stroke:#606b80; }
+.cl-image-stage .io-image.revealed .target { visibility:hidden; }
+.cl-io-controls { display:flex; justify-content:center; padding-top:16px; }
+.cl-io-controls button { width:150px; }
+.cl-extra { font-size:14px; margin-top:16px; color:var(--cl-muted); }
+#cl-custom.cl-full { position:fixed; inset:0; z-index:1000; background:var(--cl-bg); padding:18px; }
+#cl-custom.cl-full .cl-io { height:100%; display:flex; flex-direction:column; gap:10px; }
+#cl-custom.cl-full .cl-viewport { flex:1; min-height:0; height:auto; }
+#cl-custom.cl-full .cl-caption,#cl-custom.cl-full .cl-extra { max-height:100px; overflow:auto; flex-shrink:0; }
+
+@media(max-width:720px) {
+  #cram-live { padding:12px 15px 20px; }
+  .cl-header { gap:8px; margin-bottom:14px; }
+  .cl-brand { font-size:14px; }
+  .cl-deck { font-size:14px; }
+  .cl-status { font-size:9px; }
+  .cl-face { padding:26px 22px; }
+  .cl-exam { padding:23px 21px; }
+  .cl-clue { font-size:21px; }
+  .cl-choices { grid-template-columns:1fr; }
+  .cl-io { padding:17px; }
+  .cl-viewport { height:300px; }
+  .cl-io-head { flex-wrap:wrap; }
+}
+@media(prefers-reduced-motion:reduce) { .cl-turn { transition:none; } .cl-spinner { animation:none; } }
+
+/* Choices remain escaped text; preserved newlines keep numbered answers aligned. */
+.cl-choice-text{white-space:pre-wrap;text-align:left;tab-size:2}
+.cl-clue .ct-blank.cl-filled{white-space:pre-wrap;text-align:left}
+.cl-choice-tools{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:12px}
+.cl-choice-tools .cl-choice-message{flex:1;text-align:left;color:var(--cl-muted);font-size:12px}
+#cram-live .cl-choice-tools button{font-size:11px;min-height:30px;padding:5px 10px}
+
+.cl-choice-tools{flex-wrap:wrap}
+
+/* Borderless elevated question panel and one unambiguous active blank. */
+.cl-question-body{min-height:0;padding:0 0 28px;align-content:stretch}
+.cl-question-panel{display:grid;align-content:center;padding:24px 28px;background:var(--cram-question-panel,var(--cl-tint));border:0!important;border-radius:14px;box-shadow:var(--cram-question-shadow,0 4px 18px #1c294412,0 1px 4px #1c294409)}
+.cl-clue .ct-blank.cl-filled{background:transparent}
+.cl-clue .ct-blank.cl-active{background:var(--cram-blank-active,var(--cl-tint));border-radius:5px}
+.cl-active-slot .cl-slot-label:after{content:'';display:inline-block;width:6px;height:6px;margin-left:8px;vertical-align:middle;border-radius:50%;background:currentColor}
+@media(max-width:600px){.cl-question-panel{padding:19px 18px}}
+
+/* Roomier content, closer shadow, no fixed cap on attached flashcard photos. */
+#cram-live {--cram-frame-shadow:0 2px 5px #1c29441c,0 10px 22px -4px #1c294438}
+.nightMode #cram-live,.night_mode #cram-live {--cram-frame-shadow:0 2px 6px #0005,0 12px 24px -4px #0008}
+.cl-face {padding:24px 30px;box-shadow:var(--cram-frame-shadow)}
+.cl-face .cl-original-content,.cl-face .cl-flash-content {min-height:0;flex:0 1 auto;max-height:100%;padding:2px;scrollbar-gutter:stable}
+.cl-face .cl-original-content img,.cl-flash-content img {max-height:none}
+.cl-exam {padding:23px 27px;box-shadow:var(--cram-frame-shadow)}
+.cl-question-body {padding-bottom:20px}
+.cl-question-panel {padding:19px 22px}
+/* Occlusion owns a responsive image area, independent of saved card sizes. */
+.cl-io {padding:16px;box-shadow:var(--cram-frame-shadow)}
+.cl-viewport {height:clamp(300px,calc(100vh - 250px),660px)}
+.cl-io-head {flex-wrap:wrap;gap:8px}
+.cl-io-tools {flex-wrap:wrap}
+.cl-caption {margin:8px 0 12px;max-height:120px;overflow:auto}
+.cl-image-stage .mask.target {pointer-events:all;cursor:pointer}
+.cl-image-stage .io-image.revealed .target,.cl-image-stage .mask.target.io-mask-open {visibility:visible;fill:transparent;stroke:transparent}
+.cl-image-stage .mask.target:focus-visible {outline:2px solid var(--cl-accent)}
+#cram-live .cl-io-tools [data-live-action=io-masks] {min-width:96px}
+@media(max-width:720px){.cl-face{padding:21px 20px}.cl-exam{padding:20px}.cl-question-panel{padding:17px}.cl-viewport{height:clamp(280px,calc(100vh - 260px),600px)}}
+
+.cl-image-stage .io-image.revealed .mask.target.io-mask-closed {fill:var(--cl-mask);stroke:#886827;visibility:visible}
+
+/* Header/captions and tools reserve their own space inside the IO frame. */
+.cl-io {height:clamp(360px,calc(100vh - 140px),820px);display:flex;flex-direction:column}
+.cl-io-head,.cl-caption,.cl-extra {flex-shrink:0}
+.cl-io .cl-viewport {flex:1;min-height:160px;height:auto}
+.cl-extra {max-height:90px;overflow:auto}
+#cl-custom.cl-full .cl-io {height:100%}

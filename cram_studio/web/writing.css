@@ -1,0 +1,35 @@
+/* Reuse the existing question-card geometry, palette and scrolling surfaces. */
+.write-root{--write-text:var(--ink,#282e3e);--write-muted:var(--muted,#64708a);--write-line:var(--line,#e5e8f2);--write-accent:var(--primary,#4255ff);--write-bad:var(--red,#c3474f);--write-bg:var(--panel,#fff);display:flex;flex-direction:column;gap:10px;min-width:0;max-width:100%;font-size:var(--cram-choice-font,18px);color:var(--write-text)}
+#cram-live .write-root{--write-text:var(--cl-text,#282e3e);--write-muted:var(--cl-muted,#64708a);--write-line:var(--cl-line,#e5e8f2);--write-accent:var(--cl-accent,#4255ff);--write-bad:var(--cl-bad,#c3474f);--write-bg:var(--cl-panel,#fff)}
+.write-progress{font-size:12px;color:var(--write-muted);font-variant-numeric:tabular-nums}
+.write-entry-row{display:flex;align-items:stretch;gap:12px;min-width:0;max-width:100%}
+.write-input{display:block;resize:none;flex:1 1 0;width:0;min-width:0;max-width:100%;min-height:48px;max-height:160px;overflow:auto;box-sizing:border-box;padding:9px 15px;border:2px solid var(--write-line);border-radius:10px;background:var(--cram-button-bg,var(--write-bg));color:var(--cram-button-text,var(--write-text));font:inherit;line-height:1.5;outline:none;white-space:pre-wrap;overflow-wrap:anywhere;box-shadow:none;user-select:text!important;-webkit-user-select:text!important}
+.write-input:focus{border-color:var(--write-accent)}
+.write-error .write-input{border-color:var(--write-bad)}
+.write-enter{flex:0 0 auto;align-self:center;min-height:46px;padding:10px 16px;border:1px solid var(--write-line);border-radius:9px;background:var(--cram-button-bg,var(--write-bg));color:var(--cram-button-text,var(--write-text));font:inherit;font-size:14px;cursor:pointer}
+.write-enter:focus-visible{outline:2px solid var(--write-accent);outline-offset:2px}
+.write-enter:disabled{opacity:.55;cursor:default}
+.write-feedback{min-height:20px;font-size:12px;line-height:1.5;color:var(--write-muted);overflow-wrap:anywhere}
+.write-error .write-feedback{color:var(--write-bad)}
+.write-targets{margin-top:1em;padding-top:.8em;border-top:1px solid var(--line,var(--cl-line,#e5e8f2))}
+.write-card .ct-blank.cram-blank-empty{display:inline-block;min-width:7ch;min-height:1em;background:var(--cram-blank-active,transparent);border-radius:4px;vertical-align:baseline}
+.write-card [data-write-item][hidden]{display:none!important}
+.write-card .choice-section,.write-card .cl-answers{min-width:0}
+.write-card .write-input[readonly]{opacity:.65}
+.session .write-card .ct-blank.filled,#cram-live .write-card .ct-blank.cl-filled{display:inline}
+.session .write-card .write-cloze .ct-blank.filled,#cram-live .write-card .write-cloze .ct-blank.cl-filled{white-space:normal}
+#cram-live .write-card .write-enter{min-width:124px}
+@media(max-width:600px){.write-entry-row{flex-wrap:wrap}.write-input{flex-basis:100%;width:100%;min-height:48px}.write-enter{min-height:38px;padding:7px 12px}.write-root{gap:7px}.write-progress,.write-feedback{font-size:11px}}
+
+.write-targets{white-space:pre-wrap}
+.write-error .write-feedback{background:var(--cram-incorrect-bg,var(--red-tint,var(--cl-bad-bg,#fff0f1)));border-radius:5px;padding:3px 7px}
+.study-modes:has([data-mode="write"]){grid-template-columns:repeat(2,minmax(0,1fr))}
+.writing-extra{margin:10px 0 20px;font-size:13px}
+
+.write-card .card-footer .secondary{background:var(--cram-reveal-bg,var(--panel));color:var(--cram-reveal-text,var(--ink))}
+
+/* Keep all four sides inside the response pane, including disabled buttons. */
+.session .write-response-host{padding:6px;scroll-padding:6px}
+.session .write-card .write-enter{box-sizing:border-box;border:1px solid var(--write-line)!important;border-radius:9px;box-shadow:none!important;opacity:1}
+
+.writing-extra[hidden]{display:none!important}

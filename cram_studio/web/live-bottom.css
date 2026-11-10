@@ -1,0 +1,10 @@
+/* Loaded only for the native bottom bar while Cram Interface is enabled. */
+#middle button{min-height:48px;min-width:92px;border-radius:9px;padding:10px 17px;margin:3px 5px;font-family:"Segoe UI",Arial,sans-serif;box-shadow:none}#middle button[data-ease]{border-width:1px}#middle button[data-ease="1"]{color:#bd414e;border-color:#e9b6bc}#middle button[data-ease="2"]{border-color:#d5bd80}#middle button[data-ease="3"]{border-color:#9fb2eb}#middle button[data-ease="4"]{color:#15795f;border-color:#8bc4b3}#middle button .nobold{display:block;font-size:11px;margin-top:3px}#middle #ansbut{min-width:190px}#middle .stattxt{font-size:11px}body.nightMode #middle button[data-ease="1"]{color:#ffacb6}body.nightMode #middle button[data-ease="4"]{color:#83d8b4}
+@media(max-width:650px){#middle button{min-width:65px;padding:8px 10px;margin:3px 2px;font-size:12px}#middle button .nobold{font-size:10px}}
+
+/* Edit stays available on E; remove the duplicate keyboard-action button. */
+#outer button[onclick*="edit"]{display:none}
+
+/* Appearance changes styles only; native rating actions and intervals are untouched. */
+body.cram-bottom-custom #middle button{background:var(--cram-button-bg);color:var(--cram-button-text)}
+body.cram-bottom-custom #middle #ansbut{background:var(--cram-reveal-bg);color:var(--cram-reveal-text)}
